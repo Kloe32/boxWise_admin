@@ -1,0 +1,46 @@
+@font-face {
+  font-family: roboto;
+  src: url("/src/assets/fonts/Roboto-VariableFont_wdth\,wght.ttf");
+}
+
+@import "tailwindcss";
+
+@theme {
+  --font-roboto: roboto, "sans-serif";
+  --color-primary: #576ce2;
+  --color-secondary: #f1cbff;
+  --color-starblack: #020617;
+  --color-accent: #a9b6ff;
+  --color-accent2: #0d1023;
+}
+
+@keyframes move-out {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+.text-animation span {
+  display: inline-block;
+  animation: move-out 0.6s ease infinite;
+}
+
+.text-animation span {
+  animation: move-out 0.6s ease infinite;
+}
+
+.text-animation span:nth-child(1) {
+  animation-delay: 0s;
+}
+.text-animation span:nth-child(2) {
+  animation-delay: 0.1s;
+}
+.text-animation span:nth-child(3) {
+  animation-delay: 0.2s;
+}
