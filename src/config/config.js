@@ -15,7 +15,8 @@ export const API_ROUTES = {
   GET_UNIT_TYPE_URL: "/unit-type",
 
   //BOOKING ROUTES
-  GET_TENANT_URL: "bookings/tenant",
+  GET_TENANT_URL: "/bookings/tenant",
+  CANCEL_BOOKING_URL: "/bookings/cancel",
 };
 
 export const STORAGE_KEY = {

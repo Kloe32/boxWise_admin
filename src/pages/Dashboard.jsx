@@ -1,11 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { FaChartPie } from "react-icons/fa6";
-import { FaCalendarCheck, FaCheckCircle, FaClock } from "react-icons/fa";
+import {
+  FaCalendarCheck,
+  FaCheckCircle,
+  FaClock,
+  FaTools,
+} from "react-icons/fa";
 import { BsHouseGearFill } from "react-icons/bs";
+import { CiLock } from "react-icons/ci";
 import { FaLock } from "react-icons/fa";
+import UnitInfoModal from "../components/UnitInfoModal";
 import { fetchUnits } from "../services/unit.service";
 const Dashboard = () => {
   const [units, setUnits] = useState([]);
+  const [selectedUnit, setSelectedUnit] = useState(null);
 
   let statusColor = "";
   const getIcon = (status) => {
@@ -15,28 +23,44 @@ const Dashboard = () => {
       case "reserved":
         return <FaClock size={20} />;
       case "occupied":
-        return <FaLock size={20} />;
+        return <FaLock size={16} />;
       case "maintenance":
-        return <BsHouseGearFill size={20} />;
+        return <FaTools size={16} />;
       default:
-        return <CiLock size={20} />;
+        return <CiLock size={16} />;
     }
   };
   const getColor = (status) => {
     switch (status?.toLowerCase()) {
       case "available":
-        return (statusColor = "border-green-500/60 bg-green-500/85");
+        return (statusColor =
+          "border-green-500 bg-green-200/20 text-green-700");
       case "reserved":
-        return (statusColor = "border-blue-500/60 bg-blue-500/85");
+        return (statusColor = "border-blue-500 bg-blue-200/20 text-blue-700");
       case "occupied":
-        return (statusColor = "border-red-500/60 bg-red-500/85");
+        return (statusColor = "border-red-500 bg-red-200/20 text-red-700");
       case "maintenance":
-        return (statusColor = "border-yellow-400/60 bg-yellow-400/85");
+        return (statusColor =
+          "border-yellow-500 bg-yellow-200/20 text-yellow-700");
       default:
-        return (statusColor = "border-slate-300/60 bg-slate-300/85");
+        return (statusColor = "border-gray-500 bg-gray-200/20 text-gray-700");
     }
   };
+  const formatDate = (value) =>
+    value
+      ? new Intl.DateTimeFormat("en-US", {
+          month: "short",
+          day: "2-digit",
+          year: "numeric",
+        }).format(new Date(value))
+      : "N/A";
 
+  const addDays = (value, days) => {
+    if (!value) return "N/A";
+    const date = new Date(value);
+    date.setDate(date.getDate() + days);
+    return formatDate(date);
+  };
   const handleFetch = async () => {
     try {
       const response = await fetchUnits();
@@ -44,6 +68,129 @@ const Dashboard = () => {
     } catch (e) {
       console.log("Error Fetching unit", e);
     }
+  };
+
+  const groupedUnits = (units ?? []).reduce((acc, unit) => {
+    const label = unit?.type?.type_name ?? "Other";
+    if (!acc[label]) acc[label] = [];
+    acc[label].push(unit);
+    return acc;
+  }, {});
+
+  const getDetails = (unit) => {
+    const status = unit?.status?.toLowerCase() ?? "available";
+    const base = [
+      { label: "Unit", value: unit?.unit_number ?? "N/A" },
+      { label: "Type", value: unit?.type?.type_name ?? "Standard" },
+      {
+        label: "Size",
+        value: unit?.type?.sqft ? `${parseInt(unit.type.sqft)} sqft` : "—",
+      },
+    ];
+
+    if (status === "occupied") {
+      return {
+        title: "Occupied Unit",
+        status: "Occupied",
+        sections: [
+          {
+            title: "Tenant & Lease",
+            fields: [
+              {
+                label: "Tenant",
+                value: unit?.bookings[0]?.user?.full_name || "N/A",
+              },
+              {
+                label: "Lease Start",
+                value: unit?.bookings[0]?.start_date ?? "N/A",
+              },
+              {
+                label: "Lease End",
+                value: unit?.bookings[0].end_date ?? "N/A",
+              },
+            ],
+          },
+          {
+            title: "Payments",
+            fields: [
+              {
+                label: "Booking ID",
+                value: unit?.bookings[0]?.id ?? "N/A",
+              },
+              ,
+              {
+                label: "Upcoming Payment",
+                value: unit?.bookings[0]?.payments[0]?.due_date ?? "N/A",
+              },
+              {
+                label: "Amount",
+                value: unit?.bookings[0]?.payments[0]?.amount
+                  ? `$${unit.bookings[0].payments[0].amount}`
+                  : "N/A",
+              },
+            ],
+          },
+        ],
+        base,
+      };
+    }
+
+    if (status === "reserved") {
+      return {
+        title: "Reserved Unit",
+        status: "Reserved",
+        sections: [
+          {
+            title: "Hold Details",
+            fields: [
+              {
+                label: "Hold Start",
+                value: unit?.bookings[0]?.createdAt
+                  ? formatDate(unit.bookings[0].createdAt)
+                  : "N/A",
+              },
+              {
+                label: "Hold End",
+                value: addDays(unit?.bookings[0]?.createdAt, 5) ?? "N/A",
+              },
+              { label: "Hold Duration", value: "5 days" },
+            ],
+          },
+          {
+            title: "Payments",
+            fields: [
+              {
+                label: "Initial Payment",
+                value: `$${unit?.bookings[0]?.payments[0]?.amount ?? "N/A"}`,
+              },
+              {
+                label: "Payment Deadline",
+                value: addDays(unit?.bookings[0]?.createdAt, 5) ?? "N/A",
+              },
+              { label: "Monthly Rate", value: `$${unit?.unit_price ?? "N/A"}` },
+            ],
+          },
+        ],
+        base,
+      };
+    }
+
+    return {
+      title: "Available Unit",
+      status: "Available",
+      sections: [
+        {
+          title: "Unit Details",
+          fields: [
+            {
+              label: "Rate",
+              value: unit?.unit_price ? `$${unit.unit_price}` : "N/A",
+            },
+          ],
+        },
+      ],
+      base,
+    };
   };
 
   useEffect(() => {
@@ -127,69 +274,104 @@ const Dashboard = () => {
         <div className="xl:col-span-3 flex flex-col lg:flex-row gap-6 min-h-125">
           {/* <!-- Map Container --> */}
           <div className="flex-1 bg-white/90 backdrop-blur rounded-2xl shadow-sm border border-slate-200/70 flex flex-col overflow-hidden">
-            <div className="p-5 border-b border-slate-100 bg-gradient-to-r from-white to-slate-50 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div className="flex items-center gap-3">
-                <h2 className="font-bold text-lg text-navy-900">
-                  Facility Map
-                </h2>
-                <span className="bg-slate-100 text-slate-600 text-xs px-2 py-1 rounded-lg font-medium border border-slate-200">
+            <div className="p-5 md:p-6 border-b border-slate-100 bg-linear-to-r from-white via-slate-50 to-white flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+              <div className="flex items-start gap-3">
+                <div className="p-2 rounded-xl bg-slate-100 text-slate-600">
+                  <BsHouseGearFill size={16} />
+                </div>
+                <div>
+                  <h2 className="font-bold text-lg text-navy-900">
+                    Facility Map
+                  </h2>
+                  <p className="text-sm text-slate-500">
+                    Visual overview of unit availability and status.
+                  </p>
+                </div>
+              </div>
+              <div className="flex flex-wrap items-center gap-3">
+                <span className="bg-slate-100 text-slate-600 text-xs px-3 py-1.5 rounded-full font-semibold border border-slate-200">
                   {units?.length} Units
                 </span>
-              </div>
-              {/* <!-- Legend --> */}
-              <div className="flex items-center gap-4 text-xs font-medium text-slate-600">
-                <div className="flex flex-col gap-1.5">
-                  <div className="flex items-center gap-1.5">
-                    <span className="w-2.5 h-2.5 rounded-full bg-green-500"></span>{" "}
-                    Available
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <span className="w-2.5 h-2.5 rounded-full bg-accent"></span>{" "}
-                    Reserved
-                  </div>
-                </div>
-                <div className="flex flex-col gap-1.5">
-                  <div className="flex items-center gap-1.5">
-                    <span className="w-2.5 h-2.5 rounded-full bg-red-500"></span>{" "}
-                    Occupied
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <span className="w-2.5 h-2.5 rounded-full bg-yellow-400"></span>{" "}
-                    Maintenance
-                  </div>
-                </div>
+                <span className="bg-slate-100 text-slate-600 text-xs px-3 py-1.5 rounded-full font-semibold border border-slate-200">
+                  Live Status
+                </span>
               </div>
             </div>
 
-            {/* <!-- The Grid Layout for Units --> */}
-            <div className="p-4 bg-slate-50/60 flex-1 overflow-auto flex-col">
-              <div
-                className="grid grid-cols-2 md:grip-cols-4 sm:grid-cols-4 lg:grid-cols-6 gap-4"
-                id="unit-grid"
-              >
-                {units?.map((u, i) => {
-                  getColor(u?.status);
-                  return (
-                    <div
-                      key={i}
-                      className={`${statusColor} text-white relative p-3 pl-4 flex flex-col gap-3 rounded-2xl border shadow-sm text-sm overflow-hidden hover:shadow-md hover:-translate-y-0.5 transition-all hover:cursor-pointer`}
-                    >
-                      <div className="flex items-center justify-between text-xl font-bold">
-                        {u?.unit_number ? u.unit_number : "N/A"}
-                        {getIcon(u?.status)}
-                      </div>
-                      <p className="font-bold">{u?.type?.type_name}</p>
-                      <p>
-                        {u?.type?.sqft ? `${parseInt(u.type.sqft)} sqft` : "-"}
-                      </p>
+            {/* <!-- Legend --> */}
+            <div className="px-5 md:px-6 py-4 border-b border-slate-100 bg-white">
+              <div className="flex flex-wrap items-center gap-3 text-xs font-semibold text-slate-600">
+                <span className="inline-flex items-center gap-2 rounded-full border border-green-200 bg-green-50 px-3 py-1">
+                  <span className="w-2.5 h-2.5 rounded-full bg-green-500" />
+                  Available
+                </span>
+                <span className="inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-50 px-3 py-1">
+                  <span className="w-2.5 h-2.5 rounded-full bg-blue-500" />
+                  Reserved
+                </span>
+                <span className="inline-flex items-center gap-2 rounded-full border border-red-200 bg-red-50 px-3 py-1">
+                  <span className="w-2.5 h-2.5 rounded-full bg-red-500" />
+                  Occupied
+                </span>
+                <span className="inline-flex items-center gap-2 rounded-full border border-yellow-200 bg-yellow-50 px-3 py-1">
+                  <span className="w-2.5 h-2.5 rounded-full bg-yellow-400" />
+                  Maintenance
+                </span>
+              </div>
+            </div>
+
+            {/* <!-- The Grouped Layout for Units --> */}
+            <div
+              className="p-5 md:p-6 bg-slate-50/60 flex-1 overflow-auto flex-col"
+              id="unit-grid"
+            >
+              <div className="grid gap-6">
+                {Object.keys(groupedUnits).map((groupName) => (
+                  <div
+                    key={groupName}
+                    className="rounded-2xl border border-slate-200 bg-white/90 p-4 md:p-5"
+                  >
+                    <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700">
+                      {groupName}
                     </div>
-                  );
-                })}
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                      {groupedUnits[groupName].map((u, i) => {
+                        statusColor = getColor(u?.status);
+                        return (
+                          <button
+                            key={`${groupName}-${i}`}
+                            type="button"
+                            onClick={() => setSelectedUnit(u)}
+                            className={`${u?.status === "MAINTENANCE" ? "pointer-events-none opacity-50" : ""}  text-left rounded-2xl border  px-4 py-3 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md cursor-pointer ${statusColor}`}
+                          >
+                            <div className="flex items-center justify-between">
+                              <p className="text-md font-semibold">
+                                {u?.unit_number ?? "N/A"}
+                              </p>
+                              <span className="inline-flex h-6 w-6 p-0.5 items-center justify-center rounded-full border border-slate-200 bg-slate-50">
+                                {getIcon(u?.status)}
+                              </span>
+                            </div>
+
+                            <div className="mt-3 text-sm">
+                              {u?.type?.type_name ?? "Type"}
+                            </div>
+                            <div className="text-sm mt-1 text-navy-900">
+                              {u?.type?.sqft
+                                ? `${parseInt(u.type.sqft)} sqft`
+                                : "—"}
+                            </div>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
 
             {/* <!-- Mini Footer for Map --> */}
-            <div className="p-3 bg-white border-t border-slate-100 text-xs text-slate-400 flex justify-between">
+            <div className="px-5 md:px-6 py-3 bg-white border-t border-slate-100 text-xs text-slate-400 flex flex-col sm:flex-row gap-2 sm:items-center sm:justify-between">
               <span>
                 Last updated: Just now (Will be real-time after implementing
                 web-socket)
@@ -199,6 +381,12 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
+
+      <UnitInfoModal
+        selectedUnit={selectedUnit}
+        details={selectedUnit ? getDetails(selectedUnit) : null}
+        onClose={() => setSelectedUnit(null)}
+      />
     </div>
   );
 };

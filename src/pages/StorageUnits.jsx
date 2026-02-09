@@ -48,13 +48,15 @@ const StorageUnits = () => {
   };
 
   const visibleUnits = useMemo(() => {
+    const normalizedTypeId = String(selectedTypeId);
+    const normalizedStatus = statusFilter.toLowerCase();
     const byType =
-      selectedTypeId === "all"
+      normalizedTypeId === "all"
         ? units
-        : units.filter((unit) => unit?.type_id === selectedTypeId);
-    if (statusFilter === "all") return byType;
+        : units.filter((unit) => String(unit?.type_id) === normalizedTypeId);
+    if (normalizedStatus === "all") return byType;
     return byType.filter(
-      (unit) => unit?.status?.toLowerCase() === statusFilter,
+      (unit) => unit?.status?.toLowerCase() === normalizedStatus,
     );
   }, [units, selectedTypeId, statusFilter]);
 
@@ -67,22 +69,24 @@ const StorageUnits = () => {
   return (
     <div
       id="view-inventory"
-      className="flex-1 flex flex-col overflow-hidden hidden-view min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100"
+      className="flex-1 flex flex-col overflow-hidden hidden-view min-h-screen bg-linear-to-br from-slate-50 via-white to-slate-100"
     >
       {/* <!-- Header --> */}
       <div className="px-6 md:px-8 py-6 border-b border-slate-200/70 flex flex-col sm:flex-row justify-between items-start sm:items-center bg-white/90 backdrop-blur gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-navy-900">Unit Management</h1>
-          <p className="text-slate-500 text-sm mt-1">
+          <h1 className="text-2xl md:text-4xl font-bold text-navy-900">
+            Unit Management
+          </h1>
+          <p className="text-slate-500 text-base md:text-lg mt-1">
             Manage unit details, pricing, and availability.
           </p>
         </div>
         <div className="flex flex-wrap gap-3">
-          <button className="bg-slate-900 text-white px-4 py-2 rounded-xl text-sm font-medium flex items-center gap-2 transition-colors shadow-sm hover:bg-slate-800">
+          <button className="bg-slate-900 text-white px-4 py-2 rounded-xl text-base font-medium flex items-center gap-2 transition-colors shadow-sm hover:bg-slate-800">
             <FaPlus size={14} />
             <span>Add Unit Type</span>
           </button>
-          <button className="bg-accent2 hover:bg-accent2/70 text-white px-4 py-2 rounded-xl text-sm font-medium flex items-center gap-2 transition-colors shadow-sm">
+          <button className="bg-accent2 hover:bg-accent2/70 text-white px-4 py-2 rounded-xl text-base font-medium flex items-center gap-2 transition-colors shadow-sm">
             <FaPlus size={14} />
             <span>Add Units</span>
           </button>
@@ -95,7 +99,7 @@ const StorageUnits = () => {
           <button
             type="button"
             onClick={() => setActiveTab("types")}
-            className={`px-4 py-1.5 text-sm font-semibold rounded-full transition ${
+            className={`px-4 py-1.5 text-base font-semibold rounded-full transition ${
               activeTab === "types"
                 ? "bg-white text-slate-900 shadow-sm"
                 : "text-slate-500 hover:text-slate-800"
@@ -106,7 +110,7 @@ const StorageUnits = () => {
           <button
             type="button"
             onClick={() => setActiveTab("units")}
-            className={`px-4 py-1.5 text-sm font-semibold rounded-full transition ${
+            className={`px-4 py-1.5 text-base font-semibold rounded-full transition ${
               activeTab === "units"
                 ? "bg-white text-slate-900 shadow-sm"
                 : "text-slate-500 hover:text-slate-800"
@@ -121,21 +125,21 @@ const StorageUnits = () => {
         <div className="px-6 md:px-8 py-5 bg-slate-50/70 border-b border-slate-200/70">
           <div className="flex items-center justify-between gap-4">
             <div>
-              <h2 className="text-lg font-semibold text-slate-900">
+              <h2 className="text-xl font-semibold text-slate-900">
                 Unit Types
               </h2>
-              <p className="text-sm text-slate-500">
+              <p className="text-base text-slate-500">
                 Click the type to see the units.
               </p>
             </div>
-            <div className="text-sm text-slate-500">
+            <div className="text-base text-slate-500">
               {unitTypes.length} types • {units?.length} units
             </div>
           </div>
 
           <div className="mt-5 grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
             {unitTypes.length === 0 ? (
-              <div className="col-span-full rounded-2xl border border-dashed border-slate-300 bg-white/90 p-6 text-sm text-slate-500">
+              <div className="col-span-full rounded-2xl border border-dashed border-slate-300 bg-white/90 p-6 text-base text-slate-500">
                 No unit types yet. Create a unit type to get started.
               </div>
             ) : (
@@ -152,21 +156,21 @@ const StorageUnits = () => {
                   <div className="absolute inset-x-0 top-0 h-1 bg-linear-to-r from-primary via-indigo-400 to-slate-300" />
                   <div className="flex items-start justify-between gap-4">
                     <div>
-                      <h3 className="text-lg font-semibold text-slate-900">
+                      <h3 className="text-xl font-semibold text-slate-900">
                         {type?.type_name}
                       </h3>
-                      <p className="text-sm text-slate-500 mt-1">
+                      <p className="text-base text-slate-500 mt-1">
                         {parseInt(type?.sqft)} sqft • Base Price -{" "}
                         <span className="font-semibold text-slate-800">
                           {formatPrice(type?.base_price)}
                         </span>
                       </p>
                     </div>
-                    <span className="rounded-full bg-slate-900/90 px-3 py-1 text-xs font-semibold text-white shadow-sm">
+                    <span className="rounded-full bg-slate-900/90 px-3 py-1 text-sm font-semibold text-white shadow-sm">
                       {type.units.length} units
                     </span>
                   </div>
-                  <div className="mt-5 flex flex-wrap gap-2 text-xs">
+                  <div className="mt-5 flex flex-wrap gap-2 text-sm">
                     <span className="rounded-full bg-green-50 px-2.5 py-1 text-green-700">
                       {type.available} available
                     </span>
@@ -192,7 +196,7 @@ const StorageUnits = () => {
               <select
                 value={selectedTypeId}
                 onChange={(e) => setSelectedTypeId(e.target.value)}
-                className="appearance-none w-full sm:w-56 bg-white border border-slate-300 text-slate-700 py-2 pl-3 pr-8 rounded-xl text-sm focus:outline-none focus:border-brand-blue focus:ring-1 focus:ring-brand-blue"
+                className="appearance-none w-full sm:w-56 bg-white border border-slate-300 text-slate-700 py-2.5 pl-3 pr-8 rounded-xl text-base focus:outline-none focus:border-brand-blue focus:ring-1 focus:ring-brand-blue"
               >
                 <option value="all">All Unit Types</option>
                 {unitTypes.map((type) => (
@@ -204,7 +208,7 @@ const StorageUnits = () => {
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="appearance-none w-full sm:w-48 bg-white border border-slate-300 text-slate-700 py-2 pl-3 pr-8 rounded-xl text-sm focus:outline-none focus:border-brand-blue focus:ring-1 focus:ring-brand-blue"
+                className="appearance-none w-full sm:w-48 bg-white border border-slate-300 text-slate-700 py-2.5 pl-3 pr-8 rounded-xl text-base focus:outline-none focus:border-brand-blue focus:ring-1 focus:ring-brand-blue"
               >
                 <option value="all">All Status</option>
                 <option value="available">Available</option>
@@ -212,14 +216,14 @@ const StorageUnits = () => {
                 <option value="reserved">Reserved</option>
                 <option value="maintenance">Maintenance</option>
               </select>
-              <div className="text-xs text-slate-500">
+              <div className="text-sm text-slate-500">
                 Showing {visibleUnits.length} units
               </div>
             </div>
             <button
               type="button"
               onClick={() => handleFetch()}
-              className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50"
+              className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2 text-base font-semibold text-slate-700 shadow-sm hover:bg-slate-50"
             >
               Refresh Pricing Engine
             </button>

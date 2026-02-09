@@ -2,31 +2,33 @@ import React, { useState } from "react";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { FiCheckCircle, FiTool, FiSlash } from "react-icons/fi";
 
+
 const UnitsTable = ({ units, typeById, formatPrice, getStatusBg }) => {
   const [openActionId, setOpenActionId] = useState(null);
+
 
   return (
     <div className="flex-1 overflow-auto px-6 md:px-8 py-5">
       <div className="overflow-hidden rounded-2xl border border-slate-200/70 bg-white/90 backdrop-blur shadow-sm">
         <table className="min-w-full text-left border-collapse">
-          <thead className="bg-gradient-to-r from-slate-50 to-white sticky top-0 z-10">
+          <thead className="bg-linear-to-r from-slate-50 to-white sticky top-0 z-10">
             <tr>
-              <th className="px-6 py-3 text-[11px] font-semibold text-slate-500 uppercase tracking-wider border-b border-slate-200">
+              <th className="px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider border-b border-slate-200">
                 Unit Number
               </th>
-              <th className="px-6 py-3 text-[11px] font-semibold text-slate-500 uppercase tracking-wider border-b border-slate-200">
+              <th className="px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider border-b border-slate-200">
                 Type
               </th>
-              <th className="px-6 py-3 text-[11px] font-semibold text-slate-500 uppercase tracking-wider border-b border-slate-200">
+              <th className="px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider border-b border-slate-200">
                 Current Price
               </th>
-              <th className="px-6 py-3 text-[11px] font-semibold text-slate-500 uppercase tracking-wider border-b border-slate-200">
+              <th className="px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider border-b border-slate-200">
                 Status
               </th>
-              <th className="px-6 py-3 text-[11px] font-semibold text-slate-500 uppercase tracking-wider border-b border-slate-200">
+              <th className="px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider border-b border-slate-200">
                 Tenant
               </th>
-              <th className="px-10 py-3 text-[11px] font-semibold text-slate-500 uppercase tracking-wider border-b border-slate-200 ">
+              <th className="px-10 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider border-b border-slate-200 ">
                 Action
               </th>
             </tr>
@@ -44,30 +46,30 @@ const UnitsTable = ({ units, typeById, formatPrice, getStatusBg }) => {
                   key={unit?.id ?? `${unit?.unit_number}-${index}`}
                   className="odd:bg-white even:bg-slate-50/40 hover:bg-slate-100/60 transition"
                 >
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-600">
-                    <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-800 border border-slate-200">
+                  <td className="px-6 py-4 whitespace-nowrap text-base text-slate-600">
+                    <span className="inline-flex items-center px-2.5 py-1 rounded-full text-sm font-semibold bg-slate-100 text-slate-800 border border-slate-200">
                       {unit?.unit_number}
                     </span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-600">
+                  <td className="px-6 py-4 whitespace-nowrap text-base text-slate-600">
                     {type?.type_name ?? "—"}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
+                  <td className="px-6 py-4 whitespace-nowrap text-base text-slate-500">
                     {formatPrice(unit?.unit_price)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span
-                      className={`px-3 py-1 text-xs font-semibold ${statusBg} rounded-full`}
+                      className={`px-3 py-1 text-sm font-semibold ${statusBg} rounded-full`}
                     >
                       {unit?.status}
                     </span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
+                  <td className="px-6 py-4 whitespace-nowrap text-base text-slate-500">
                     {unit?.current_tenant
                       ? unit.current_tenant.full_name
                       : "--"}
                   </td>
-                  <td className="px-10 py-4 whitespace-nowrap text-sm font-medium relative">
+                  <td className="px-10 py-4 whitespace-nowrap text-base font-medium relative">
                     <button
                       type="button"
                       onClick={() =>

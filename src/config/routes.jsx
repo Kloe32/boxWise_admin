@@ -13,7 +13,7 @@ export const sideBarItems = [
     icon: <FaBoxes size={15} />,
   },
   {
-    name: "Bookings",
+    name: "Bookings & Payments",
     path: "/bookings",
     icon: <FaRegCalendarCheck size={15} />,
   },
