@@ -17,6 +17,7 @@ export const API_ROUTES = {
   //BOOKING ROUTES
   GET_TENANT_URL: "/bookings/tenant",
   CANCEL_BOOKING_URL: "/bookings/cancel",
+  GET_PENDING_BOOKINGS_URL: "/bookings/pending-with-date",
 };
 
 export const STORAGE_KEY = {

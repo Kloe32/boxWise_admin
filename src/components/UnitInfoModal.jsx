@@ -79,20 +79,6 @@ const UnitInfoModal = ({ selectedUnit, details, onClose }) => {
             ))}
           </div>
 
-          {details.status === "Available" ? (
-            <div className="px-6 md:px-7 py-5 border-t border-slate-100 bg-white flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-              <p className="text-sm text-slate-500">
-                Ready to assign a tenant to this unit.
-              </p>
-              <button
-                type="button"
-                className="rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800"
-              >
-                Assign Tenant
-              </button>
-            </div>
-          ) : null}
-
           {details.status === "Reserved" ? (
             <div className="px-6 md:px-7 py-5 border-t border-slate-100 bg-white flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
               <p className="text-sm text-slate-500">
@@ -125,15 +111,16 @@ const UnitInfoModal = ({ selectedUnit, details, onClose }) => {
               <div className="flex flex-wrap items-center gap-3">
                 <button
                   type="button"
-                  className="rounded-xl cursor-pointer bg-accent2 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-700"
+                  className="rounded-xl border cursor-pointer border-slate-200 px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-100"
+                  onClick={() => navigate("/bookings")}
                 >
-                  Message Tenant
+                  Record Payment
                 </button>
                 <button
                   type="button"
-                  className="rounded-xl border cursor-pointer border-slate-200 px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-100"
+                  className="rounded-xl cursor-pointer bg-red-500 px-4 py-2 text-sm font-semibold text-white hover:bg-red-300"
                 >
-                  Record Payment
+                  Cancel Lease
                 </button>
               </div>
             </div>

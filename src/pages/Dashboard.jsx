@@ -4,6 +4,7 @@ import {
   FaCalendarCheck,
   FaCheckCircle,
   FaClock,
+  FaArrowDown,
   FaTools,
 } from "react-icons/fa";
 import { BsHouseGearFill } from "react-icons/bs";
@@ -11,11 +12,27 @@ import { CiLock } from "react-icons/ci";
 import { FaLock } from "react-icons/fa";
 import UnitInfoModal from "../components/UnitInfoModal";
 import { fetchUnits } from "../services/unit.service";
+import { fetchPendingBookings } from "../services/booking.service";
 const Dashboard = () => {
   const [units, setUnits] = useState([]);
   const [selectedUnit, setSelectedUnit] = useState(null);
+  const [pendingBookings, setPendingBookings] = useState([]);
 
-  let statusColor = "";
+  //for occupancy metric
+  const totalUnits = units.length;
+  const occupiedUnits = units.filter(
+    (u) => u?.status?.toLowerCase() === "occupied",
+  ).length;
+
+  const occupancyPercent = totalUnits
+    ? Math.round((occupiedUnits / totalUnits) * 100)
+    : 0;
+
+  //for pending metric
+  const totalPending = pendingBookings?.totalPending?.length;
+  const differenceInPending =
+    pendingBookings?.todayPending - pendingBookings?.yesterdayPending || 0;
+
   const getIcon = (status) => {
     switch (status?.toLowerCase()) {
       case "available":
@@ -30,6 +47,7 @@ const Dashboard = () => {
         return <CiLock size={16} />;
     }
   };
+  let statusColor = "";
   const getColor = (status) => {
     switch (status?.toLowerCase()) {
       case "available":
@@ -64,7 +82,9 @@ const Dashboard = () => {
   const handleFetch = async () => {
     try {
       const response = await fetchUnits();
+      const pending = await fetchPendingBookings();
       setUnits(response);
+      setPendingBookings(pending);
     } catch (e) {
       console.log("Error Fetching unit", e);
     }
@@ -217,16 +237,22 @@ const Dashboard = () => {
                 <p className="text-sm font-medium text-slate-500 uppercase tracking-wide">
                   Current Occupancy
                 </p>
-                <h3 className="text-3xl font-bold text-navy-900 mt-1">78%</h3>
+                <h3 className="text-3xl font-bold text-navy-900 mt-1">
+                  {occupancyPercent}%
+                </h3>
               </div>
               <div className="bg-blue-50 p-2.5 rounded-xl">
                 <FaChartPie size={16} className="text-primary" />
               </div>
             </div>
             <div className="w-full bg-slate-100 rounded-full h-2 mb-2">
-              <div className="bg-primary h-2 rounded-full w-[78%]"></div>
+              <div
+                className={`bg-primary h-2 rounded-full w-[${occupancyPercent}%]`}
+              ></div>
             </div>
-            <p className="text-xs text-slate-400">14/18 Units Occupied</p>
+            <p className="text-xs text-slate-400">
+              {`${occupiedUnits}/${totalUnits}`} Units Occupied
+            </p>
           </div>
 
           {/* <!-- Metric 2: Upcoming Reservations --> */}
@@ -237,15 +263,30 @@ const Dashboard = () => {
                 <p className="text-sm font-medium text-slate-500 uppercase tracking-wide">
                   Pending Reservations
                 </p>
-                <h3 className="text-3xl font-bold text-navy-900 mt-1">7</h3>
+                <h3 className="text-3xl font-bold text-navy-900 mt-1">
+                  {totalPending || 0}
+                </h3>
               </div>
               <div className="bg-green-100/90 p-2.5 rounded-xl text-green-500">
                 <FaCalendarCheck size={16} />
               </div>
             </div>
-            <div className="flex items-center gap-2 text-sm text-green-600 font-medium">
+            <div
+              className={`flex items-center gap-2 text-sm ${differenceInPending >= 0 ? "text-green-600" : "text-red-600"} font-medium`}
+            >
               <i className="ph-bold ph-trend-up"></i>
-              <span>+2 today</span>
+
+              <span className="flex gap-2 items-center">
+                {differenceInPending >= 0 ? (
+                  `+ ${differenceInPending} `
+                ) : (
+                  <span className="flex items-center gap-1">
+                    <FaArrowDown size={12} />
+                    {Math.abs(differenceInPending)}
+                  </span>
+                )}
+                today
+              </span>
               <span className="text-slate-400 font-normal">vs yesterday</span>
             </div>
           </div>

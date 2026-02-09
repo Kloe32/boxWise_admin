@@ -3,7 +3,7 @@ import { sideBarItems } from "../config/routes";
 import { NavLink } from "react-router-dom";
 const Sidebar = () => {
   return (
-    <aside className="w-74 bg-white border-r flex flex-col border-slate-200/50 min-h-full shadow-sm z-10 md:flex ">
+    <aside className="w-74 bg-white border-r flex flex-col border-slate-200/50 shadow-sm z-10 md:flex sticky top-0 h-screen">
       {/*---------- Logo ----------*/}
       <div className="flex gap-6 py-4 justify-center">
         <div className="rounded-full w-15 h-15 p-2 bg-starblack/80">

@@ -8,7 +8,7 @@ const Topbar = () => {
   const { userData } = useUser();
 
   return (
-    <div className="flex w-full items-center justify-between border-b border-slate-200/50 shadow-sm px-8 py-4 bg-white/80 backdrop-blur supports-backdrop-filter:bg-white/60 shrink-0 gap-10">
+    <div className="flex w-full items-center justify-between border-b border-slate-200/50 shadow-sm px-8 py-4 bg-white shrink-0 gap-10 sticky top-0 z-20">
       <div className="flex flex-1 w-full items-center justify-between gap-6">
         <div className="flex w-full max-w-lg items-center gap-2 rounded-xl border border-slate-300 p-2 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/30">
           <IoSearch size={16} className="text-slate-500" />
