@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { FaChartPie } from "react-icons/fa6";
+import { addDays, formatDate } from "../helper/helper";
 import {
   FaCalendarCheck,
   FaCheckCircle,
@@ -19,8 +20,8 @@ const Dashboard = () => {
   const [pendingBookings, setPendingBookings] = useState([]);
 
   //for occupancy metric
-  const totalUnits = units.length;
-  const occupiedUnits = units.filter(
+  const totalUnits = units?.length ?? 0;
+  const occupiedUnits = units?.filter(
     (u) => u?.status?.toLowerCase() === "occupied",
   ).length;
 
@@ -64,21 +65,7 @@ const Dashboard = () => {
         return (statusColor = "border-gray-500 bg-gray-200/20 text-gray-700");
     }
   };
-  const formatDate = (value) =>
-    value
-      ? new Intl.DateTimeFormat("en-US", {
-          month: "short",
-          day: "2-digit",
-          year: "numeric",
-        }).format(new Date(value))
-      : "N/A";
 
-  const addDays = (value, days) => {
-    if (!value) return "N/A";
-    const date = new Date(value);
-    date.setDate(date.getDate() + days);
-    return formatDate(date);
-  };
   const handleFetch = async () => {
     try {
       const response = await fetchUnits();
@@ -164,6 +151,10 @@ const Dashboard = () => {
             title: "Hold Details",
             fields: [
               {
+                label: "Reserved By",
+                value: unit?.bookings[0]?.user?.full_name ?? "N/A",
+              },
+              {
                 label: "Hold Start",
                 value: unit?.bookings[0]?.createdAt
                   ? formatDate(unit.bookings[0].createdAt)
@@ -180,6 +171,10 @@ const Dashboard = () => {
             title: "Payments",
             fields: [
               {
+                label: "Booking ID",
+                value: `${unit?.bookings[0]?.id ?? "N/A"}`,
+              },
+              {
                 label: "Initial Payment",
                 value: `$${unit?.bookings[0]?.payments[0]?.amount ?? "N/A"}`,
               },
@@ -187,7 +182,10 @@ const Dashboard = () => {
                 label: "Payment Deadline",
                 value: addDays(unit?.bookings[0]?.createdAt, 5) ?? "N/A",
               },
-              { label: "Monthly Rate", value: `$${unit?.unit_price ?? "N/A"}` },
+              {
+                label: "Monthly Rate",
+                value: `$${unit.type?.adjusted_price ?? "N/A"}`,
+              },
             ],
           },
         ],
@@ -247,7 +245,8 @@ const Dashboard = () => {
             </div>
             <div className="w-full bg-slate-100 rounded-full h-2 mb-2">
               <div
-                className={`bg-primary h-2 rounded-full w-[${occupancyPercent}%]`}
+                className={`bg-primary h-2 rounded-full`}
+                style={{ width: `${occupancyPercent}%` }}
               ></div>
             </div>
             <p className="text-xs text-slate-400">
@@ -331,10 +330,7 @@ const Dashboard = () => {
               </div>
               <div className="flex flex-wrap items-center gap-3">
                 <span className="bg-slate-100 text-slate-600 text-xs px-3 py-1.5 rounded-full font-semibold border border-slate-200">
-                  {units?.length} Units
-                </span>
-                <span className="bg-slate-100 text-slate-600 text-xs px-3 py-1.5 rounded-full font-semibold border border-slate-200">
-                  Live Status
+                  {units?.length ?? 0} Units
                 </span>
               </div>
             </div>

@@ -37,6 +37,7 @@ const Login = () => {
         email,
         password,
       });
+      console.log(response.data.data);
       if (response?.data?.data?.user?.role !== "ADMIN") {
         return setError("Sorry, you are not authorized to use this service.");
       }

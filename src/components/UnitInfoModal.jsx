@@ -12,6 +12,7 @@ const UnitInfoModal = ({ selectedUnit, details, onClose }) => {
     await cancelBooking(id);
     onClose();
   };
+
   return (
     <>
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/50 p-4">
@@ -89,7 +90,9 @@ const UnitInfoModal = ({ selectedUnit, details, onClose }) => {
                   type="button"
                   className="rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-700 cursor-pointer"
                   onClick={() => {
-                    navigate("/bookings");
+                    navigate("/bookings", {
+                      state: { bookingId: selectedUnit?.bookings[0]?.id },
+                    });
                   }}
                 >
                   Confirm Payment

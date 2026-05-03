@@ -2,10 +2,12 @@ import React, { useState } from "react";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { FiCheckCircle, FiTool, FiSlash } from "react-icons/fi";
 
-
 const UnitsTable = ({ units, typeById, formatPrice, getStatusBg }) => {
   const [openActionId, setOpenActionId] = useState(null);
-
+  const calculateAdjustment = (originalPrice, adjustedPrice) => {
+    if (originalPrice === 0) return 0;
+    return ((adjustedPrice - originalPrice) / originalPrice) * 100;
+  };
 
   return (
     <div className="flex-1 overflow-auto px-6 md:px-8 py-5">
@@ -54,8 +56,30 @@ const UnitsTable = ({ units, typeById, formatPrice, getStatusBg }) => {
                   <td className="px-6 py-4 whitespace-nowrap text-base text-slate-600">
                     {type?.type_name ?? "—"}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-base text-slate-500">
-                    {formatPrice(unit?.unit_price)}
+                  <td className="px-6 py-4 whitespace-nowrap font-bold text-base text-slate-500">
+                    {formatPrice(type?.adjusted_price)}
+                    {calculateAdjustment(
+                      type?.base_price,
+                      type?.adjusted_price,
+                    ) !== 0 ? (
+                      <span
+                        className={`ml-2 text-sm font-semibold ${
+                          calculateAdjustment(
+                            type?.base_price,
+                            type?.adjusted_price,
+                          ) > 0
+                            ? "text-rose-600"
+                            : "text-emerald-600"
+                        }`}
+                      >
+                        {calculateAdjustment(
+                          type?.base_price,
+                          type?.adjusted_price,
+                        ) > 0
+                          ? `+${calculateAdjustment(type?.base_price, type?.adjusted_price).toFixed(2)}%`
+                          : `${calculateAdjustment(type?.base_price, type?.adjusted_price).toFixed(2)}%`}
+                      </span>
+                    ) : null}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span
@@ -104,14 +128,6 @@ const UnitsTable = ({ units, typeById, formatPrice, getStatusBg }) => {
                           >
                             <FiTool />
                             Mark Maintenance
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => setOpenActionId(null)}
-                            className="w-full px-5 py-2.5 flex items-center gap-3 text-sm text-rose-600 hover:bg-rose-50/60"
-                          >
-                            <FiSlash />
-                            Deactivate Unit
                           </button>
                         </div>
                       </div>

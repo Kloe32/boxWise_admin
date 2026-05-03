@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { FaPlus } from "react-icons/fa";
 import { fetchUnitTypes } from "../services/unit.service";
 import UnitsTable from "../components/UnitsTable";
 const StorageUnits = () => {
@@ -80,16 +79,6 @@ const StorageUnits = () => {
           <p className="text-slate-500 text-base md:text-lg mt-1">
             Manage unit details, pricing, and availability.
           </p>
-        </div>
-        <div className="flex flex-wrap gap-3">
-          <button className="bg-slate-900 text-white px-4 py-2 rounded-xl text-base font-medium flex items-center gap-2 transition-colors shadow-sm hover:bg-slate-800">
-            <FaPlus size={14} />
-            <span>Add Unit Type</span>
-          </button>
-          <button className="bg-accent2 hover:bg-accent2/70 text-white px-4 py-2 rounded-xl text-base font-medium flex items-center gap-2 transition-colors shadow-sm">
-            <FaPlus size={14} />
-            <span>Add Units</span>
-          </button>
         </div>
       </div>
 
@@ -220,13 +209,6 @@ const StorageUnits = () => {
                 Showing {visibleUnits.length} units
               </div>
             </div>
-            <button
-              type="button"
-              onClick={() => handleFetch()}
-              className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2 text-base font-semibold text-slate-700 shadow-sm hover:bg-slate-50"
-            >
-              Refresh Pricing Engine
-            </button>
           </div>
 
           <UnitsTable
