@@ -1,6 +1,6 @@
 export const API_ROUTES = {
-  LOCAL_URL: "http://localhost:8030/api/v1",
-  // BASE_URL:'https://shopping-server-nerj.onrender.com/api/v1',
+  // LOCAL_URL: "http://localhost:8030/api/v1",
+  BASE_URL:'https://boxwise-server.onrender.com/api/v1',
 
   //User ROUTES
   LOGIN_URL: "/user/login",
